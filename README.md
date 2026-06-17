@@ -3,7 +3,7 @@
 [![Downloads](https://img.shields.io/github/downloads/kda2495/Mass_Printing/total?label=Downloads&color=blue)](https://github.com/kda2495/Mass_Printing/releases)
 
 # Mass_Printing
-PowerShell-скрипт для массовой печати документов в Windows.
+Скрипт для массовой печати документов в Windows.
 
 ## Возможности
 * Массовая печать файлов (по алфавитно-числовому порядку)  
