@@ -1,4 +1,5 @@
-﻿Add-Type -TypeDefinition @"
+# Настройка консоли:
+Add-Type -TypeDefinition @"
 using System;
 using System.Runtime.InteropServices;
 public class ConsoleFont {
@@ -28,9 +29,10 @@ public class ConsoleFont {
 }
 "@
 
-# Устанавливаем шрифт Consolas и кодировку UTF8:
 [ConsoleFont]::SetFont("Consolas", 16)
+[Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
 chcp 65001 > $null
 
 # Функция разделителя:
@@ -38,7 +40,7 @@ function Separator {
 	Write-Host "================================================" -ForegroundColor Green
 }
 
-Write-Host "Mass_Printing 1.6.2" -ForegroundColor Black -BackgroundColor Yellow
+Write-Host "Mass_Printing 1.6.3" -ForegroundColor Black -BackgroundColor Yellow
 Separator
 
 # Проверка запущенных процессов:
@@ -73,8 +75,6 @@ if ($OpenFileDialog.ShowDialog() -ne 'OK') {
 	Separator
 	Write-Host "Ошибка: Файлы не выбраны." -ForegroundColor DarkRed
 	Separator
-	Write-Host -NoNewLine "Нажмите любую клавишу для выхода..."
-	$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
 	exit
 }
 
@@ -177,6 +177,3 @@ if ($Output -eq 6) {
 	# Открытие папки с перемещенными файлами:
 	Invoke-Item $DestinationFolder
 }
-
-Write-Host -NoNewLine "Печать завершена, нажмите любую клавишу для продолжения..."
-$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
