@@ -1,6 +1,7 @@
 [![GitHub release](https://img.shields.io/github/v/release/kda2495/Mass_Printing.svg?label=Release)](https://github.com/kda2495/Mass_Printing/releases)
 [![License](https://img.shields.io/github/license/kda2495/Mass_Printing.svg?label=License&color=blue)](https://github.com/kda2495/Mass_Printing/blob/main/LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/kda2495/Mass_Printing/total?label=Downloads&color=blue)](https://github.com/kda2495/Mass_Printing/releases)
+[![Downloads](https://img.shields.io/github/downloads/kda2495/Mass_Printing/latest/total?label=Downloads%20(latest)&color=blue)](https://github.com/kda2495/Mass_Printing/releases)
 
 # Mass_Printing
 Скрипт для массовой печати документов в Windows.
