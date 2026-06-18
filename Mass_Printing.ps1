@@ -42,7 +42,7 @@ function Separator {
 
 # Версия скрипта:
 Separator
-Write-Host "Mass_Printing 1.6.4"
+Write-Host "Mass_Printing 1.6.5"
 Separator
 
 # Проверка запущенных процессов:
