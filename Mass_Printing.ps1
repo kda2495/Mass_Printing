@@ -40,6 +40,7 @@ function Separator {
 	Write-Host "================================================" -ForegroundColor Green
 }
 
+# Версия скрипта:
 Separator
 Write-Host "Mass_Printing 1.6.4"
 Separator
