@@ -42,27 +42,8 @@ function Separator {
 
 # Версия скрипта:
 Separator
-Write-Host "Mass_Printing 1.6.5"
+Write-Host "Mass_Printing 1.7"
 Separator
-
-# Проверка запущенных процессов:
-$CheckProcess = 'winword', 'powerpnt', 'excel', 'AcroRd32', 'Acrobat'
-$Wshell = New-Object -ComObject Wscript.Shell
-
-do {
-	$Proc = Get-Process -Name $CheckProcess -ErrorAction SilentlyContinue
-	
-	if (!$Proc) {
-		break
-	}
-
-	$RunningApps = $Proc | ForEach-Object { if ($_.Description) { $_.Description } else { $_.ProcessName } } | Select-Object -Unique	
-	$Output = $Wshell.Popup("Данные приложения должны быть закрыты перед запуском печати:`n`n" + ($RunningApps -join "`n") + "`n`nПожалуйста, закройте их и нажмите 'Повтор' для продолжения.", 0, "Закрытие приложений", 5 + 48)
-
-	if ($Output -eq 2) { 
-		exit
-	}
-} while ($true)
 
 # Выбор файлов для печати:
 Write-Host "Выберите файлы для печати (для выделения всех файлов нажмите Ctrl + A):"
@@ -77,6 +58,7 @@ if ($OpenFileDialog.ShowDialog() -ne 'OK') {
 	Separator
 	Write-Host "Ошибка: Файлы не выбраны." -ForegroundColor DarkRed
 	Separator
+	[System.Runtime.InteropServices.Marshal]::ReleaseComObject($Wshell) | Out-Null
 	exit
 }
 
@@ -96,7 +78,8 @@ do {
 	}
 	Write-Host "Ошибка: Неверный ввод." -ForegroundColor DarkRed
 	Separator
-} while ($true)
+} until ($CopiesInput -match '^\d+$' -and [int]$CopiesInput -gt 0)
+
 $Copies = [int]$CopiesInput
 
 # Задержка между печатью файлов (в секундах):
@@ -104,16 +87,16 @@ $Seconds = 3.6
 
 # Расчёт примерного времени печати:
 $PrintTime = [TimeSpan]::FromSeconds($FilesTotal * $Copies * $Seconds).ToString("hh\:mm\:ss")
-Write-Host "Примерное время печати: $PrintTime"
+Write-Host "Примерное время печати (без учета работы принтера): $PrintTime"
 Separator
 
 # Печать файлов:
 $FailedFiles = [System.Collections.Generic.List[string]]::new()
 
 for ($CopiesDefault = 1; $CopiesDefault -le $Copies; $CopiesDefault++) {
-	$i = 1
-	foreach ($file in $FilesToPrint) {
-		Write-Host "Копия $($CopiesDefault): $i/$FilesTotal. Печать файла $($file.Name)"
+	for ($i = 0; $i -lt $FilesToPrint.Count; $i++) {
+		$file = $FilesToPrint[$i]
+		Write-Host "Копия $($CopiesDefault): $($i + 1)/$FilesTotal. Печать файла $($file.Name)"
 
 		try {
 			Start-Process -FilePath $file.FullName -Verb Print -WindowStyle Minimized -ErrorAction Stop
@@ -124,7 +107,6 @@ for ($CopiesDefault = 1; $CopiesDefault -le $Copies; $CopiesDefault++) {
 		}
 
 		Start-Sleep -Seconds $Seconds
-		$i++
 	}
 	Separator
 }
@@ -135,47 +117,36 @@ if ($FailedFiles.Count -gt 0) {
 	Separator
 }
 
-# Закрытие программ перед перемещением:
-Write-Host "Завершение фоновых процессов..."
-Separator
-$Proc = Get-Process -Name $CheckProcess -ErrorAction SilentlyContinue
-if ($Proc) {
-	foreach ($item in $Proc) {
-		$null = $item.CloseMainWindow()
-	}
-	Start-Sleep -Seconds 1
-	Get-Process -Name $CheckProcess -ErrorAction SilentlyContinue | Stop-Process -Force
-}
-
 # Перемещение файлов:
 $Directory = Split-Path -Parent $OpenFileDialog.FileName
 $Date = Get-Date -Format "dd.MM.yyyy"
 
 # Запрос на перемещение файлов:
+$Wshell = New-Object -ComObject Wscript.Shell
 $Output = $Wshell.Popup("Переместить распечатанные файлы в папку Распечатано?", 0, "Перемещение файлов", 4 + 32)
 
 if ($Output -eq 6) { 
 	$Printed = Join-Path $Directory "Распечатано_$Date"
-	$TestedPath = $Printed
 	
-	if (!(Test-Path $TestedPath)) {
-		New-Item -ItemType Directory -Force -Path $TestedPath | Out-Null
+	if (!(Test-Path $Printed)) {
+		New-Item -ItemType Directory -Force -Path $Printed | Out-Null
 	}
 	
 	Write-Host "Перемещаем файлы..."
 	Separator
 	
-	$DestinationFolder = $Printed
-	$i = 1
-	foreach ($file in $FilesToPrint) {
+	for ($i = 0; $i -lt $FilesToPrint.Count; $i++) {
+		$file = $FilesToPrint[$i]
 		if (Test-Path $file.FullName) {
-			Write-Host "$i/$FilesTotal. Файл $($file.name) перемещен в $DestinationFolder"
-			Move-Item -Path $file.FullName -Destination $DestinationFolder -Force
+			Write-Host "$($i + 1)/$FilesTotal. Файл $($file.Name) перемещен в $Printed"
+			Move-Item -Path $file.FullName -Destination $Printed -Force
 		}
-		$i++
 	}
 	Separator
 	
 	# Открытие папки с перемещенными файлами:
-	Invoke-Item $DestinationFolder
+	Invoke-Item $Printed
 }
+
+# Очистка памяти от COM-объекта:
+[System.Runtime.InteropServices.Marshal]::ReleaseComObject($Wshell) | Out-Null
