@@ -32,22 +32,21 @@ public class ConsoleFont {
 [ConsoleFont]::SetFont("Consolas", 16)
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-$OutputEncoding = [System.Text.Encoding]::UTF8
 chcp 65001 > $null
 
 # Функция разделителя:
 function Separator {
-	Write-Host "================================================" -ForegroundColor Green
+	Write-Host "===================================================" -ForegroundColor Green
 }
 
 # Версия скрипта:
 Separator
-Write-Host "Mass_Printing 1.7"
+Write-Host "Mass_Printing 1.8"
 Separator
 
 # Выбор файлов для печати:
 Write-Host "Выберите файлы для печати (для выделения всех файлов нажмите Ctrl + A):"
-
+$Wshell = New-Object -ComObject Wscript.Shell
 Add-Type -AssemblyName System.Windows.Forms | Out-Null
 $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
 $OpenFileDialog.Multiselect = $true
@@ -57,6 +56,7 @@ $OpenFileDialog.Filter = "Документы (*.pdf,*.doc,*.docx,*.xls,*.xlsx,*.
 if ($OpenFileDialog.ShowDialog() -ne 'OK') {
 	Separator
 	Write-Host "Ошибка: Файлы не выбраны." -ForegroundColor DarkRed
+	Write-Host "Нажмите любую клавишу для выхода."
 	Separator
 	[System.Runtime.InteropServices.Marshal]::ReleaseComObject($Wshell) | Out-Null
 	exit
@@ -85,19 +85,15 @@ $Copies = [int]$CopiesInput
 # Задержка между печатью файлов (в секундах):
 $Seconds = 3.6
 
-# Расчёт примерного времени печати:
-$PrintTime = [TimeSpan]::FromSeconds($FilesTotal * $Copies * $Seconds).ToString("hh\:mm\:ss")
-Write-Host "Примерное время печати (без учета работы принтера): $PrintTime"
-Separator
-
 # Печать файлов:
 $FailedFiles = [System.Collections.Generic.List[string]]::new()
 
 for ($CopiesDefault = 1; $CopiesDefault -le $Copies; $CopiesDefault++) {
+	Write-Host "Печать файлов:"
 	for ($i = 0; $i -lt $FilesToPrint.Count; $i++) {
 		$file = $FilesToPrint[$i]
-		Write-Host "Копия $($CopiesDefault): $($i + 1)/$FilesTotal. Печать файла $($file.Name)"
-
+		Write-Host "Копия $($CopiesDefault): $($i + 1)/$FilesTotal. Печать файла: $($file.Name)"
+		
 		try {
 			Start-Process -FilePath $file.FullName -Verb Print -WindowStyle Minimized -ErrorAction Stop
 		} catch {
@@ -105,7 +101,7 @@ for ($CopiesDefault = 1; $CopiesDefault -le $Copies; $CopiesDefault++) {
 			Write-Host "Ошибка: Не удалось отправить на печать: $($file.Name): `n$_" -ForegroundColor DarkRed
 			$FailedFiles.Add($file.Name)
 		}
-
+		
 		Start-Sleep -Seconds $Seconds
 	}
 	Separator
@@ -122,7 +118,6 @@ $Directory = Split-Path -Parent $OpenFileDialog.FileName
 $Date = Get-Date -Format "dd.MM.yyyy"
 
 # Запрос на перемещение файлов:
-$Wshell = New-Object -ComObject Wscript.Shell
 $Output = $Wshell.Popup("Переместить распечатанные файлы в папку Распечатано?", 0, "Перемещение файлов", 4 + 32)
 
 if ($Output -eq 6) { 
@@ -132,8 +127,7 @@ if ($Output -eq 6) {
 		New-Item -ItemType Directory -Force -Path $Printed | Out-Null
 	}
 	
-	Write-Host "Перемещаем файлы..."
-	Separator
+	Write-Host "Перемещение файлов:"
 	
 	for ($i = 0; $i -lt $FilesToPrint.Count; $i++) {
 		$file = $FilesToPrint[$i]
@@ -147,6 +141,7 @@ if ($Output -eq 6) {
 	# Открытие папки с перемещенными файлами:
 	Invoke-Item $Printed
 }
-
-# Очистка памяти от COM-объекта:
+Write-Host "Печать завершена. Нажмите любую клавишу для выхода."
+Separator
+# Очистка памяти:
 [System.Runtime.InteropServices.Marshal]::ReleaseComObject($Wshell) | Out-Null
