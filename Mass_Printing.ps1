@@ -41,26 +41,31 @@ function Separator {
 
 # Версия скрипта:
 Separator
-Write-Host "Mass_Printing 1.8"
+Write-Host "Mass_Printing 1.9"
 Separator
 
 # Выбор файлов для печати:
 Write-Host "Выберите файлы для печати (для выделения всех файлов нажмите Ctrl + A):"
 $Wshell = New-Object -ComObject Wscript.Shell
 Add-Type -AssemblyName System.Windows.Forms | Out-Null
+$TopForm = New-Object System.Windows.Forms.Form
+$TopForm.TopMost = $true
 $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
 $OpenFileDialog.Multiselect = $true
 $OpenFileDialog.Filter = "Документы (*.pdf,*.doc,*.docx,*.xls,*.xlsx,*.ppt,*.pptx)|*.pdf;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx"
 
 # Если файлы не выбраны:
-if ($OpenFileDialog.ShowDialog() -ne 'OK') {
+if ($OpenFileDialog.ShowDialog($TopForm) -ne 'OK') {
 	Separator
 	Write-Host "Ошибка: Файлы не выбраны." -ForegroundColor DarkRed
 	Write-Host "Нажмите любую клавишу для выхода."
 	Separator
 	[System.Runtime.InteropServices.Marshal]::ReleaseComObject($Wshell) | Out-Null
+    $TopForm.Dispose()
 	exit
 }
+
+$TopForm.Dispose()
 
 # Подсчет количества выбранных файлов:
 $FilesToPrint = Get-Item $OpenFileDialog.FileNames | Sort-Object { [regex]::Replace($_.Name, '\d+', { $args[0].Value.PadLeft(10, '0') }) }
