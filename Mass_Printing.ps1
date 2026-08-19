@@ -36,17 +36,17 @@ chcp 65001 > $null
 
 # Функция разделителя:
 function Separator {
-	Write-Host "===================================================" -ForegroundColor Green
+	Write-Host "=====================================================" -ForegroundColor Green
 }
 
 # Версия скрипта:
 Separator
-Write-Host "Mass_Printing 1.9"
+Write-Host "Mass_Printing 2.0"
 Separator
 
 # Выбор файлов для печати:
-Write-Host "Выберите файлы для печати (для выделения всех файлов нажмите Ctrl + A):"
-$Wshell = New-Object -ComObject Wscript.Shell
+Write-Host "Выберите файлы для печати:"
+$WShell = New-Object -ComObject Wscript.Shell
 Add-Type -AssemblyName System.Windows.Forms | Out-Null
 $TopForm = New-Object System.Windows.Forms.Form
 $TopForm.TopMost = $true
@@ -58,10 +58,12 @@ $OpenFileDialog.Filter = "Документы (*.pdf,*.doc,*.docx,*.xls,*.xlsx,*.
 if ($OpenFileDialog.ShowDialog($TopForm) -ne 'OK') {
 	Separator
 	Write-Host "Ошибка: Файлы не выбраны." -ForegroundColor DarkRed
-	Write-Host "Нажмите любую клавишу для выхода."
+	Write-Host "Нажмите любую клавишу для выхода..."
 	Separator
-	[System.Runtime.InteropServices.Marshal]::ReleaseComObject($Wshell) | Out-Null
-    $TopForm.Dispose()
+	
+	# Очистка памяти:
+	[System.Runtime.InteropServices.Marshal]::ReleaseComObject($WShell) | Out-Null
+	$TopForm.Dispose()
 	exit
 }
 
@@ -123,7 +125,7 @@ $Directory = Split-Path -Parent $OpenFileDialog.FileName
 $Date = Get-Date -Format "dd.MM.yyyy"
 
 # Запрос на перемещение файлов:
-$Output = $Wshell.Popup("Переместить распечатанные файлы в папку Распечатано?", 0, "Перемещение файлов", 4 + 32)
+$Output = $WShell.Popup("Переместить распечатанные файлы в папку Распечатано?", 0, "Перемещение файлов", 4 + 32 + 4096)
 
 if ($Output -eq 6) { 
 	$Printed = Join-Path $Directory "Распечатано_$Date"
@@ -137,16 +139,18 @@ if ($Output -eq 6) {
 	for ($i = 0; $i -lt $FilesToPrint.Count; $i++) {
 		$file = $FilesToPrint[$i]
 		if (Test-Path $file.FullName) {
-			Write-Host "$($i + 1)/$FilesTotal. Файл $($file.Name) перемещен в $Printed"
-			Move-Item -Path $file.FullName -Destination $Printed -Force
+			try {
+				Move-Item -Path $file.FullName -Destination $Printed -Force -ErrorAction Stop
+				Write-Host "$($i + 1)/$FilesTotal. Файл $($file.Name) перемещен в $Printed."
+			} catch {
+				Write-Host "$($i + 1)/$FilesTotal. Ошибка: Файл $($file.Name) занят программой и не перемещен." -ForegroundColor DarkRed
+			}
 		}
 	}
 	Separator
-	
-	# Открытие папки с перемещенными файлами:
-	Invoke-Item $Printed
 }
-Write-Host "Печать завершена. Нажмите любую клавишу для выхода."
-Separator
 # Очистка памяти:
-[System.Runtime.InteropServices.Marshal]::ReleaseComObject($Wshell) | Out-Null
+[System.Runtime.InteropServices.Marshal]::ReleaseComObject($WShell) | Out-Null
+
+Write-Host "Печать завершена. Нажмите любую клавишу для выхода..."
+Separator
