@@ -1,7 +1,8 @@
 [![GitHub release](https://img.shields.io/github/v/release/kda2495/Mass_Printing.svg?label=Release)](https://github.com/kda2495/Mass_Printing/releases)
 [![License](https://img.shields.io/github/license/kda2495/Mass_Printing.svg?label=License&color=blue)](https://github.com/kda2495/Mass_Printing/blob/main/LICENSE)
 [![Downloads](https://img.shields.io/github/downloads/kda2495/Mass_Printing/total?label=Downloads&color=blue)](https://github.com/kda2495/Mass_Printing/releases)
-[![Downloads](https://img.shields.io/github/downloads/kda2495/Mass_Printing/latest/total?label=Downloads%20(latest)&color=blue)](https://github.com/kda2495/Mass_Printing/releases)
+[![Downloads](https://img.shields.io/github/downloads/kda2495/Mass_Printing/latest/total?label=Downloads%20(latest)&color=blue)](https://github.com/kda2495/Mass_Printing/releases)   
+[![CloudTips](https://img.shields.io/badge/Банка_для_чаевых_на-CloudTips-blue?style=flat)](https://pay.cloudtips.ru/p/c70c9e56)
 
 # Mass_Printing
 Скрипт для массовой печати документов в Windows.
@@ -25,7 +26,7 @@
 Скрипт сортирует файлы для печати в алфавитном и числовом порядке.  
 Опционально после печати распечатанные файлы перемещаются в папку `Распечатано_Текущая дата`.
 
-## Поддержка проекта:
+## Банка для чаевых:
 Mass_Printing полностью бесплатен, однако, если вы хотите безвозмездно поддержать проект, то можно это сделать по следующим реквизитам:  
 [Поддержать через CloudTips](https://pay.cloudtips.ru/p/c70c9e56)  
 

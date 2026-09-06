@@ -41,7 +41,7 @@ function Separator {
 
 # Версия скрипта:
 Separator
-Write-Host "Mass_Printing 2.0"
+Write-Host "Mass_Printing 2.0.1"
 Separator
 
 # Выбор файлов для печати:
@@ -52,7 +52,7 @@ $TopForm = New-Object System.Windows.Forms.Form
 $TopForm.TopMost = $true
 $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
 $OpenFileDialog.Multiselect = $true
-$OpenFileDialog.Filter = "Документы (*.pdf,*.doc,*.docx,*.xls,*.xlsx,*.ppt,*.pptx)|*.pdf;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx"
+$OpenFileDialog.Filter = "Документы (*.pdf,*.doc,*.docx,*.xls,*.xlsx,*.ppt,*.pptx,*.txt)|*.pdf;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.txt"
 
 # Если файлы не выбраны:
 if ($OpenFileDialog.ShowDialog($TopForm) -ne 'OK') {
