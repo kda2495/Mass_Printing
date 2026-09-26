@@ -41,7 +41,7 @@ function Separator {
 
 # Версия скрипта:
 Separator
-Write-Host "Mass_Printing 2.0.1"
+Write-Host "Mass_Printing 2.0.2"
 Separator
 
 # Выбор файлов для печати:
