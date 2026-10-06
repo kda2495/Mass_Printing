@@ -41,7 +41,7 @@ function Separator {
 
 # Версия скрипта:
 Separator
-Write-Host "Mass_Printing 2.0.2"
+Write-Host "Mass_Printing 2.0.3"
 Separator
 
 # Выбор файлов для печати:
@@ -58,6 +58,7 @@ $OpenFileDialog.Filter = "Документы (*.pdf,*.doc,*.docx,*.xls,*.xlsx,*.
 if ($OpenFileDialog.ShowDialog($TopForm) -ne 'OK') {
 	Separator
 	Write-Host "Ошибка: Файлы не выбраны." -ForegroundColor DarkRed
+	Separator
 	Write-Host "Нажмите любую клавишу для выхода..."
 	Separator
 	
