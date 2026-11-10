@@ -30,9 +30,33 @@ public class ConsoleFont {
 "@
 
 [ConsoleFont]::SetFont("Consolas", 16)
+
+# Настройка размера буфера экрана:
+try {
+	$RawUI = $Host.UI.RawUI
+	$WindowSize = $RawUI.WindowSize
+	$BufferSize = $RawUI.BufferSize
+	
+	# Настройки ширины и высоты буфера экрана:
+	$BufferWidth = [Math]::Max([Math]::Max($BufferSize.Width, 120), $WindowSize.Width)
+	$BufferHeight = [Math]::Max([Math]::Max($BufferSize.Height, 9001), $WindowSize.Height)
+	
+	if ($BufferSize.Width -ne $BufferWidth -or $BufferSize.Height -ne $BufferHeight) {
+		$RawUI.BufferSize = New-Object System.Management.Automation.Host.Size($BufferWidth, $BufferHeight)
+	}
+	
+	# Расширение окна до 120 символов, если позволяет экран:
+	$WindowWidth = [Math]::Min([Math]::Max($WindowSize.Width, 120), $RawUI.MaxPhysicalWindowSize.Width)
+	if ($WindowWidth -gt $WindowSize.Width) {
+		$RawUI.WindowSize = New-Object System.Management.Automation.Host.Size($WindowWidth, $WindowSize.Height)
+	}
+} catch {
+}
+
+# Включение UTF-8 по умолчанию:
 [Console]::InputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-chcp 65001 > $null
+$OutputEncoding = [System.Text.Encoding]::UTF8
 
 # Функция разделителя:
 function Separator {
@@ -41,7 +65,7 @@ function Separator {
 
 # Версия скрипта:
 Separator
-Write-Host "Mass_Printing 2.0.3"
+Write-Host "Mass_Printing 2.0.4"
 Separator
 
 # Выбор файлов для печати:
