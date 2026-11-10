@@ -38,15 +38,15 @@ try {
 	$BufferSize = $RawUI.BufferSize
 	
 	# Настройки ширины и высоты буфера экрана:
-	$BufferWidth = [Math]::Max([Math]::Max($BufferSize.Width, 120), $WindowSize.Width)
+	$BufferWidth = [Math]::Max([Math]::Max($BufferSize.Width, 90), $WindowSize.Width)
 	$BufferHeight = [Math]::Max([Math]::Max($BufferSize.Height, 9001), $WindowSize.Height)
 	
 	if ($BufferSize.Width -ne $BufferWidth -or $BufferSize.Height -ne $BufferHeight) {
 		$RawUI.BufferSize = New-Object System.Management.Automation.Host.Size($BufferWidth, $BufferHeight)
 	}
 	
-	# Расширение окна до 120 символов, если позволяет экран:
-	$WindowWidth = [Math]::Min([Math]::Max($WindowSize.Width, 120), $RawUI.MaxPhysicalWindowSize.Width)
+	# Расширение окна до 90 символов, если позволяет экран:
+	$WindowWidth = [Math]::Min([Math]::Max($WindowSize.Width, 90), $RawUI.MaxPhysicalWindowSize.Width)
 	if ($WindowWidth -gt $WindowSize.Width) {
 		$RawUI.WindowSize = New-Object System.Management.Automation.Host.Size($WindowWidth, $WindowSize.Height)
 	}
@@ -65,7 +65,7 @@ function Separator {
 
 # Версия скрипта:
 Separator
-Write-Host "Mass_Printing 2.0.4"
+Write-Host "Mass_Printing 2.0.5"
 Separator
 
 # Выбор файлов для печати:
